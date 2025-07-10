@@ -49,7 +49,28 @@ function saveQAResults(qaData) {
     } else {
       spreadsheet = SpreadsheetApp.create(spreadsheetName);
       const sheet = spreadsheet.getActiveSheet();
-      sheet.getRange('A1:I1').setValues([['Timestamp', 'Dashboard Name', 'Image File ID', 'Data Accuracy', 'Visual Consistency', 'Interactivity', 'Performance', 'Notes', 'QA Checkpoints']]);
+      
+      // Create comprehensive headers for all QA checklist items
+      const headers = [
+        'Timestamp', 'Dashboard Name', 'Image File ID', 'Notes', 'QA Checkpoints',
+        // Functionality & Interactivity
+        'Filters Work', 'Dropdowns Update', 'Tooltips Accurate', 'Navigation Works', 'Date Filters Default',
+        // Chart Accuracy  
+        'Correct Data Points', 'No Unexpected Values', 'Measures Match', 'Totals Correct',
+        // Visual Consistency
+        'Legends Clean', 'Brand Colors', 'Consistent Fonts', 'No Orphan Colors', 'Null Values Handled',
+        // Data Integrity
+        'Numbers Match', 'Formatting Consistent', 'Data Refresh Verified'
+      ];
+      
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+      
+      // Format the header row
+      const headerRange = sheet.getRange(1, 1, 1, headers.length);
+      headerRange.setBackground('#3498db');
+      headerRange.setFontColor('white');
+      headerRange.setFontWeight('bold');
+      sheet.setFrozenRows(1);
     }
     
     const sheet = spreadsheet.getActiveSheet();
@@ -63,18 +84,41 @@ function saveQAResults(qaData) {
       ).join(' | ');
     }
     
-    // Add the QA results
-    sheet.appendRow([
+    // Prepare the row data with all QA checklist results
+    const rowData = [
       timestamp,
       qaData.dashboardName,
       qaData.imageFileId,
-      qaData.dataAccuracy,
-      qaData.visualConsistency,
-      qaData.interactivity,
-      qaData.performance,
       qaData.notes,
-      checkpointData
-    ]);
+      checkpointData,
+      // Functionality & Interactivity
+      qaData.filtersWork || false,
+      qaData.dropdownsUpdate || false,
+      qaData.tooltipsAccurate || false,
+      qaData.navigationWorks || false,
+      qaData.dateFiltersDefault || false,
+      // Chart Accuracy
+      qaData.correctDataPoints || false,
+      qaData.noUnexpectedValues || false,
+      qaData.measuresMatch || false,
+      qaData.totalsCorrect || false,
+      // Visual Consistency
+      qaData.legendsClean || false,
+      qaData.brandColors || false,
+      qaData.consistentFonts || false,
+      qaData.noOrphanColors || false,
+      qaData.nullValuesHandled || false,
+      // Data Integrity
+      qaData.numbersMatch || false,
+      qaData.formattingConsistent || false,
+      qaData.dataRefreshVerified || false
+    ];
+    
+    // Add the QA results
+    sheet.appendRow(rowData);
+    
+    // Auto-resize columns for better readability
+    sheet.autoResizeColumns(1, rowData.length);
     
     return {
       success: true,
