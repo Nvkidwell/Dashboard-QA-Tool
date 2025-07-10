@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau Dashboard QA Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            font-weight: 400;
+        }
+
+        .upload-area {
+            border: 3px dashed #3498db;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #2980b9;
+            background: #e3f2fd;
+        }
+
+        .upload-area.dragover {
+            border-color: #27ae60;
+            background: #e8f5e8;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            box-shadow: 0 4px 15px rgba(142, 68, 173, 0.3);
+            margin-left: 10px;
+        }
+
+        .btn-download:hover {
+            box-shadow: 0 6px 20px rgba(142, 68, 173, 0.4);
+        }
+
+        .download-section {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #8e44ad;
+        }
+
+        .notes-summary {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .notes-summary h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .checkpoint-note-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+
+        .checkpoint-note-item strong {
+            color: #2c3e50;
+        }
+
+        .download-canvas {
+            display: none;
+        }
+
+        .image-container {
+            position: relative;
+            display: none;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .checkbox-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .qa-checkbox {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            pointer-events: all;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .checkbox-label {
+            position: absolute;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            pointer-events: all;
+            white-space: nowrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(0,0,0,0.9);
+        }
+
+        .checkpoint-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #888;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .modal-textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .checkpoint-with-notes {
+            background: rgba(255, 193, 7, 0.9) !important;
+        }
+
+        .checkpoint-with-notes:hover {
+            background: rgba(255, 193, 7, 1) !important;
+        }
+
+        .qa-form {
+            display: none;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Tableau Dashboard QA Tool</h1>
+            <p>Upload your dashboard screenshot and complete quality assurance checks</p>
+        </div>
+
+        <div class="content">
+            <div id="statusMessage" class="status-message"></div>
+            
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+
+            <div class="section">
+                <h2>1. Upload Dashboard Screenshot</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">Click to select or drag and drop your dashboard image</div>
+                    <small>Supports PNG, JPG, and JPEG formats</small>
+                    <input type="file" id="fileInput" class="file-input" accept="image/*">
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>2. Review Dashboard & Mark QA Checks</h2>
+                <div id="imageContainer" class="image-container">
+                    <img id="dashboardImage" class="dashboard-image" alt="Dashboard">
+                    <div class="checkbox-overlay" id="checkboxOverlay"></div>
+                </div>
+                <button id="addCheckboxBtn" class="btn" style="display: none;">Add QA Checkpoint</button>
+            </div>
+
+            <div class="section">
+                <h2>3. Complete QA Form</h2>
+                <div id="qaForm" class="qa-form">
+                    <div class="form-group">
+                        <label for="dashboardName">Dashboard Name:</label>
+                        <input type="text" id="dashboardName" placeholder="Enter dashboard name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>QA Checklist:</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="dataAccuracy">
+                                <label for="dataAccuracy">Data Accuracy Verified</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="visualConsistency">
+                                <label for="visualConsistency">Visual Consistency</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="interactivity">
+                                <label for="interactivity">Interactivity Tested</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="performance">
+                                <label for="performance">Performance Acceptable</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Additional Notes:</label>
+                        <textarea id="notes" placeholder="Any additional observations or comments..."></textarea>
+                    </div>
+
+                    <button id="submitQA" class="btn btn-success">Submit QA Report</button>
+                    <button id="downloadReport" class="btn btn-download" style="display: none;">📥 Download QA Report</button>
+                </div>
+
+                <div id="downloadSection" class="download-section">
+                    <h4>📋 QA Report Summary</h4>
+                    <p>Your QA report is ready to download. The image will include all checkboxes and notes summary below.</p>
+                    
+                    <div id="notesSummary" class="notes-summary" style="display: none;">
+                        <h4>📝 QA Checkpoint Notes</h4>
+                        <div id="notesContent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Processing your request...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden canvas for download generation -->
+    <canvas id="downloadCanvas" class="download-canvas"></canvas>
+
+    <!-- QA Checkpoint Notes Modal -->
+    <div id="checkpointModal" class="checkpoint-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">QA Checkpoint Notes</h3>
+                <button class="close-btn" onclick="closeCheckpointModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="checkpointDescription">Add notes for this QA checkpoint:</p>
+                <textarea id="checkpointNotes" class="modal-textarea" placeholder="Enter specific observations, issues, or comments for this checkpoint..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeCheckpointModal()">Cancel</button>
+                <button class="btn" onclick="saveCheckpointNotes()">Save Notes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentImageFile = null;
+        let checkboxCount = 0;
+        let qaCheckboxes = [];
+        let currentCheckpointId = null;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+            updateProgress(0);
+        });
+
+        function initializeEventListeners() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const addCheckboxBtn = document.getElementById('addCheckboxBtn');
+            const submitBtn = document.getElementById('submitQA');
+            const downloadBtn = document.getElementById('downloadReport');
+
+            // File upload handlers
+            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+            fileInput.addEventListener('change', handleFileSelect);
+
+            // QA checkbox placement
+            addCheckboxBtn.addEventListener('click', enableCheckboxPlacement);
+            document.getElementById('dashboardImage').addEventListener('click', placeCheckbox);
+
+            // Form submission
+            submitBtn.addEventListener('click', submitQAReport);
+            
+            // Download functionality
+            downloadBtn.addEventListener('click', downloadQAReport);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showStatus('Please select a valid image file.', 'error');
+                return;
+            }
+
+            currentImageFile = file;
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const img = document.getElementById('dashboardImage');
+                img.src = e.target.result;
+                document.getElementById('imageContainer').style.display = 'block';
+                document.getElementById('addCheckboxBtn').style.display = 'inline-block';
+                document.getElementById('qaForm').style.display = 'block';
+                updateProgress(33);
+                showStatus('Image uploaded successfully! Now add QA checkpoints by clicking "Add QA Checkpoint" and then clicking on the image.', 'success');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function enableCheckboxPlacement() {
+            const btn = document.getElementById('addCheckboxBtn');
+            btn.textContent = 'Click on the image to place QA checkpoints';
+            btn.style.background = 'linear-gradient(135deg, #e67e22, #d35400)';
+            document.getElementById('dashboardImage').style.cursor = 'crosshair';
+        }
+
+        function placeCheckbox(e) {
+            if (e.target.style.cursor !== 'crosshair') return;
+
+            const rect = e.target.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+            createQACheckbox(x, y);
+        }
+
+        function createQACheckbox(x, y) {
+            checkboxCount++;
+            const overlay = document.getElementById('checkboxOverlay');
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'qa-checkbox';
+            checkbox.id = `qa-check-${checkboxCount}`;
+            checkbox.style.left = `${x}%`;
+            checkbox.style.top = `${y}%`;
+            checkbox.style.transform = 'translate(-50%, -50%)';
+
+            const label = document.createElement('label');
+            label.className = 'checkbox-label';
+            label.htmlFor = checkbox.id;
+            label.textContent = `QA Check ${checkboxCount}`;
+            label.style.left = `${x}%`;
+            label.style.top = `${y + 3}%`;
+            label.style.transform = 'translate(-50%, 0)';
+
+            overlay.appendChild(checkbox);
+            overlay.appendChild(label);
+
+            qaCheckboxes.push({
+                id: checkbox.id,
+                checkNumber: checkboxCount,
+                x: x,
+                y: y,
+                checked: false,
+                notes: ''
+            });
+
+            // Update checkbox state tracking
+            checkbox.addEventListener('change', function() {
+                const checkboxData = qaCheckboxes.find(cb => cb.id === this.id);
+                if (checkboxData) {
+                    checkboxData.checked = this.checked;
+                }
+            });
+
+            // Add click handler for label to open notes modal
+            label.addEventListener('click', function(e) {
+                if (e.target === label) {
+                    openCheckpointModal(checkbox.id);
+                }
+            });
+
+            updateProgress(66);
+        }
+
+        function openCheckpointModal(checkpointId) {
+            currentCheckpointId = checkpointId;
+            const checkboxData = qaCheckboxes.find(cb => cb.id === checkpointId);
+            
+            if (checkboxData) {
+                document.getElementById('checkpointDescription').textContent = 
+                    `Add notes for QA Check ${checkboxData.checkNumber}:`;
+                document.getElementById('checkpointNotes').value = checkboxData.notes || '';
+                document.getElementById('checkpointModal').style.display = 'block';
+            }
+        }
+
+        function closeCheckpointModal() {
+            document.getElementById('checkpointModal').style.display = 'none';
+            currentCheckpointId = null;
+        }
+
+        function saveCheckpointNotes() {
+            if (!currentCheckpointId) return;
+            
+            const notes = document.getElementById('checkpointNotes').value.trim();
+            const checkboxData = qaCheckboxes.find(cb => cb.id === currentCheckpointId);
+            
+            if (checkboxData) {
+                checkboxData.notes = notes;
+                
+                // Update the visual appearance of the label
+                const label = document.querySelector(`label[for="${currentCheckpointId}"]`);
+                if (label) {
+                    if (notes) {
+                        label.classList.add('checkpoint-with-notes');
+                        label.textContent = `QA Check ${checkboxData.checkNumber} 📝`;
+                    } else {
+                        label.classList.remove('checkpoint-with-notes');
+                        label.textContent = `QA Check ${checkboxData.checkNumber}`;
+                    }
+                }
+            }
+            
+            closeCheckpointModal();
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('checkpointModal');
+            if (e.target === modal) {
+                closeCheckpointModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeCheckpointModal();
+            }
+        });
+
+        function submitQAReport() {
+            const dashboardName = document.getElementById('dashboardName').value;
+            const dataAccuracy = document.getElementById('dataAccuracy').checked;
+            const visualConsistency = document.getElementById('visualConsistency').checked;
+            const interactivity = document.getElementById('interactivity').checked;
+            const performance = document.getElementById('performance').checked;
+            const notes = document.getElementById('notes').value;
+
+            if (!dashboardName.trim()) {
+                showStatus('Please enter a dashboard name.', 'error');
+                return;
+            }
+
+            if (!currentImageFile) {
+                showStatus('Please upload an image first.', 'error');
+                return;
+            }
+
+            showLoading(true);
+            
+            // Convert image to base64 for upload
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                
+                // Upload image first
+                google.script.run
+                    .withSuccessHandler(function(result) {
+                        if (result.success) {
+                            // Save QA results
+                            const qaData = {
+                                dashboardName: dashboardName,
+                                imageFileId: result.fileId,
+                                dataAccuracy: dataAccuracy,
+                                visualConsistency: visualConsistency,
+                                interactivity: interactivity,
+                                performance: performance,
+                                notes: notes,
+                                qaCheckboxes: qaCheckboxes
+                            };
+                            
+                            google.script.run
+                                .withSuccessHandler(function(saveResult) {
+                                    showLoading(false);
+                                    if (saveResult.success) {
+                                        showStatus('QA report submitted successfully!', 'success');
+                                        updateProgress(100);
+                                        showDownloadSection();
+                                    } else {
+                                        showStatus('Error saving QA results: ' + saveResult.error, 'error');
+                                    }
+                                })
+                                .withFailureHandler(function(error) {
+                                    showLoading(false);
+                                    showStatus('Error: ' + error.toString(), 'error');
+                                })
+                                .saveQAResults(qaData);
+                        } else {
+                            showLoading(false);
+                            showStatus('Error uploading image: ' + result.error, 'error');
+                        }
+                    })
+                    .withFailureHandler(function(error) {
+                        showLoading(false);
+                        showStatus('Error: ' + error.toString(), 'error');
+                    })
+                    .uploadImage(imageData, currentImageFile.name);
+            };
+            
+            reader.readAsDataURL(currentImageFile);
+        }
+
+        function showDownloadSection() {
+            const downloadSection = document.getElementById('downloadSection');
+            const downloadBtn = document.getElementById('downloadReport');
+            
+            downloadSection.style.display = 'block';
+            downloadBtn.style.display = 'inline-block';
+            
+            // Generate notes summary
+            generateNotesSummary();
+        }
+
+        function generateNotesSummary() {
+            const checkboxesWithNotes = qaCheckboxes.filter(cb => cb.notes && cb.notes.trim());
+            
+            if (checkboxesWithNotes.length > 0) {
+                const notesSummary = document.getElementById('notesSummary');
+                const notesContent = document.getElementById('notesContent');
+                
+                notesContent.innerHTML = '';
+                
+                checkboxesWithNotes.forEach(checkpoint => {
+                    const noteItem = document.createElement('div');
+                    noteItem.className = 'checkpoint-note-item';
+                    noteItem.innerHTML = `
+                        <strong>QA Check ${checkpoint.checkNumber}:</strong> ${checkpoint.notes}
+                    `;
+                    notesContent.appendChild(noteItem);
+                });
+                
+                notesSummary.style.display = 'block';
+            }
+        }
+
+        function downloadQAReport() {
+            const canvas = document.getElementById('downloadCanvas');
+            const ctx = canvas.getContext('2d');
+            const img = document.getElementById('dashboardImage');
+            
+            // Wait for image to load if needed
+            if (!img.complete) {
+                img.onload = () => generateDownloadImage();
+            } else {
+                generateDownloadImage();
+            }
+        }
+
+        function generateDownloadImage() {
+            const canvas = document.getElementById('downloadCanvas');
+            const ctx = canvas.getContext('2d');
+            const img = document.getElementById('dashboardImage');
+            const container = document.getElementById('imageContainer');
+            
+            // Get actual image dimensions
+            const imgRect = img.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            // Calculate notes section height
+            const checkboxesWithNotes = qaCheckboxes.filter(cb => cb.notes && cb.notes.trim());
+            const notesHeight = checkboxesWithNotes.length > 0 ? Math.max(200, checkboxesWithNotes.length * 50 + 100) : 0;
+            const headerHeight = 80;
+            const padding = 40;
+            
+            // Set canvas size
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight + notesHeight + headerHeight + padding * 2;
+            
+            // Fill background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw header
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Tableau Dashboard QA Report', canvas.width / 2, 40);
+            
+            // Draw timestamp
+            ctx.font = '18px Arial';
+            ctx.fillStyle = '#7f8c8d';
+            const timestamp = new Date().toLocaleString();
+            ctx.fillText(`Generated: ${timestamp}`, canvas.width / 2, 65);
+            
+            // Draw dashboard image
+            ctx.drawImage(img, 0, headerHeight + padding, img.naturalWidth, img.naturalHeight);
+            
+            // Draw checkboxes on the image
+            qaCheckboxes.forEach(checkbox => {
+                const x = (checkbox.x / 100) * img.naturalWidth;
+                const y = (checkbox.y / 100) * img.naturalHeight + headerHeight + padding;
+                
+                // Draw checkbox background
+                ctx.fillStyle = checkbox.checked ? '#27ae60' : '#e74c3c';
+                ctx.beginPath();
+                ctx.arc(x, y, 12, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Draw checkbox border
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw checkmark if checked
+                if (checkbox.checked) {
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(x - 6, y);
+                    ctx.lineTo(x - 2, y + 4);
+                    ctx.lineTo(x + 6, y - 4);
+                    ctx.stroke();
+                }
+                
+                // Draw label background
+                const labelText = checkbox.notes ? `QA Check ${checkbox.checkNumber} 📝` : `QA Check ${checkbox.checkNumber}`;
+                const labelY = y + 25;
+                
+                ctx.font = '14px Arial';
+                const textMetrics = ctx.measureText(labelText);
+                const labelWidth = textMetrics.width + 16;
+                const labelHeight = 24;
+                
+                ctx.fillStyle = checkbox.notes ? 'rgba(255, 193, 7, 0.9)' : 'rgba(0, 0, 0, 0.8)';
+                ctx.fillRect(x - labelWidth/2, labelY - 16, labelWidth, labelHeight);
+                
+                // Draw label text
+                ctx.fillStyle = checkbox.notes ? '#000000' : '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.fillText(labelText, x, labelY);
+            });
+            
+            // Draw notes section if there are any
+            if (checkboxesWithNotes.length > 0) {
+                const notesStartY = img.naturalHeight + headerHeight + padding + 20;
+                
+                // Draw notes header
+                ctx.fillStyle = '#3498db';
+                ctx.fillRect(0, notesStartY, canvas.width, 2);
+                
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('📝 QA Checkpoint Notes', 20, notesStartY + 40);
+                
+                // Draw individual notes
+                let currentY = notesStartY + 70;
+                ctx.font = '16px Arial';
+                
+                checkboxesWithNotes.forEach(checkpoint => {
+                    // Draw checkpoint title
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.fillText(`QA Check ${checkpoint.checkNumber}:`, 20, currentY);
+                    
+                    // Draw notes text (with word wrapping)
+                    ctx.fillStyle = '#555555';
+                    ctx.font = '16px Arial';
+                    const notes = checkpoint.notes;
+                    const maxWidth = canvas.width - 40;
+                    const words = notes.split(' ');
+                    let line = '';
+                    let lineY = currentY + 25;
+                    
+                    for (let i = 0; i < words.length; i++) {
+                        const testLine = line + words[i] + ' ';
+                        const metrics = ctx.measureText(testLine);
+                        
+                        if (metrics.width > maxWidth && i > 0) {
+                            ctx.fillText(line, 20, lineY);
+                            line = words[i] + ' ';
+                            lineY += 20;
+                        } else {
+                            line = testLine;
+                        }
+                    }
+                    ctx.fillText(line, 20, lineY);
+                    
+                    currentY = lineY + 30;
+                });
+            }
+            
+            // Convert to blob and download
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const dashboardName = document.getElementById('dashboardName').value || 'dashboard';
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                
+                a.href = url;
+                a.download = `${dashboardName}_QA_Report_${timestamp}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus('QA report downloaded successfully! 📥', 'success');
+            }, 'image/png');
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function updateProgress(percentage) {
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        function resetForm() {
+            // Reset all form elements
+            document.getElementById('dashboardName').value = '';
+            document.getElementById('dataAccuracy').checked = false;
+            document.getElementById('visualConsistency').checked = false;
+            document.getElementById('interactivity').checked = false;
+            document.getElementById('performance').checked = false;
+            document.getElementById('notes').value = '';
+            
+            // Reset image and checkboxes
+            document.getElementById('imageContainer').style.display = 'none';
+            document.getElementById('addCheckboxBtn').style.display = 'none';
+            document.getElementById('qaForm').style.display = 'none';
+            document.getElementById('checkboxOverlay').innerHTML = '';
+            document.getElementById('downloadSection').style.display = 'none';
+            document.getElementById('downloadReport').style.display = 'none';
+            document.getElementById('notesSummary').style.display = 'none';
+            
+            // Reset variables
+            currentImageFile = null;
+            checkboxCount = 0;
+            qaCheckboxes = [];
+            currentCheckpointId = null;
+            
+            // Reset progress
+            updateProgress(0);
+        }
+    </script>
+</body>
+</html>
