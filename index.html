@@ -305,6 +305,22 @@
             border-color: #3498db;
         }
 
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
         .modal-footer {
             display: flex;
             gap: 10px;
@@ -362,10 +378,26 @@
             transition: border-color 0.3s ease;
         }
 
-        .form-group input[type="text"]:focus,
-        .form-group textarea:focus {
+        .form-group input[type="text"]:focus {
             outline: none;
             border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .form-group input[type="text"].error {
+            border-color: #e74c3c !important;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .required {
+            color: #e74c3c;
+            font-weight: bold;
         }
 
         .form-group textarea {
@@ -374,25 +406,44 @@
         }
 
         .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            display: block;
             margin-top: 10px;
+        }
+
+        .checkbox-category {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .checkbox-category h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
         }
 
         .checkbox-item {
             display: flex;
-            align-items: center;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-            border: 2px solid #e0e0e0;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
             transition: all 0.3s ease;
         }
 
+        .checkbox-item:last-child {
+            border-bottom: none;
+        }
+
         .checkbox-item:hover {
-            border-color: #3498db;
-            transform: translateY(-2px);
+            background: #f8f9fa;
+            padding-left: 10px;
+            border-radius: 5px;
         }
 
         .checkbox-item input[type="checkbox"] {
@@ -502,8 +553,8 @@
                 <div class="upload-area" id="uploadArea">
                     <div class="upload-icon">📤</div>
                     <div class="upload-text">Click to select or drag and drop your dashboard image</div>
-                    <small>Supports PNG, JPG, and JPEG formats</small>
-                    <input type="file" id="fileInput" class="file-input" accept="image/*">
+                    <small>Supports PNG, JPG, and JPEG formats (Max 10MB)</small>
+                    <input type="file" id="fileInput" class="file-input" accept="image/png,image/jpeg,image/jpg">
                 </div>
             </div>
 
@@ -520,28 +571,99 @@
                 <h2>3. Complete QA Form</h2>
                 <div id="qaForm" class="qa-form">
                     <div class="form-group">
-                        <label for="dashboardName">Dashboard Name:</label>
-                        <input type="text" id="dashboardName" placeholder="Enter dashboard name">
+                        <label for="dashboardName">Dashboard Name: <span style="color: #e74c3c;">*</span></label>
+                        <input type="text" id="dashboardName" placeholder="Enter dashboard name (required)" required>
                     </div>
 
                     <div class="form-group">
                         <label>QA Checklist:</label>
                         <div class="checkbox-group">
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="dataAccuracy">
-                                <label for="dataAccuracy">Data Accuracy Verified</label>
+                            <!-- Functionality & Interactivity -->
+                            <div class="checkbox-category">
+                                <h4>1. Functionality & Interactivity</h4>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="filtersWork">
+                                    <label for="filtersWork">Filters work as expected (no broken or orphaned filters)</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="dropdownsUpdate">
+                                    <label for="dropdownsUpdate">Dropdowns and parameters update charts correctly</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="tooltipsAccurate">
+                                    <label for="tooltipsAccurate">Tooltips show accurate and relevant information</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="navigationWorks">
+                                    <label for="navigationWorks">Navigation buttons or links work (to other dashboards/pages)</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="dateFiltersDefault">
+                                    <label for="dateFiltersDefault">Date filters default to correct time ranges</label>
+                                </div>
                             </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="visualConsistency">
-                                <label for="visualConsistency">Visual Consistency</label>
+
+                            <!-- Chart Accuracy -->
+                            <div class="checkbox-category">
+                                <h4>2. Chart Accuracy</h4>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="correctDataPoints">
+                                    <label for="correctDataPoints">Correct number of data points are shown in each chart</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="noUnexpectedValues">
+                                    <label for="noUnexpectedValues">No unexpected categories or values appear in charts</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="measuresMatch">
+                                    <label for="measuresMatch">All measures and dimensions used match the data source/requirements</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="totalsCorrect">
+                                    <label for="totalsCorrect">Totals and subtotals calculate correctly</label>
+                                </div>
                             </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="interactivity">
-                                <label for="interactivity">Interactivity Tested</label>
+
+                            <!-- Visual Consistency -->
+                            <div class="checkbox-category">
+                                <h4>3. Visual Consistency</h4>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="legendsClean">
+                                    <label for="legendsClean">Legends do not contain unexpected or extraneous values</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="brandColors">
+                                    <label for="brandColors">All colors align with brand standards</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="consistentFonts">
+                                    <label for="consistentFonts">Consistent use of fonts, font sizes, and spacing</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="noOrphanColors">
+                                    <label for="noOrphanColors">No orphan color keys (colors with no corresponding data)</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="nullValuesHandled">
+                                    <label for="nullValuesHandled">Zero or null values are not misleading (hidden vs. displayed)</label>
+                                </div>
                             </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="performance">
-                                <label for="performance">Performance Acceptable</label>
+
+                            <!-- Data Integrity -->
+                            <div class="checkbox-category">
+                                <h4>4. Data Integrity</h4>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="numbersMatch">
+                                    <label for="numbersMatch">Numbers match the data source</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="formattingConsistent">
+                                    <label for="formattingConsistent">Currency and number formatting is consistent and correct</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="dataRefreshVerified">
+                                    <label for="dataRefreshVerified">Data refresh date is verified and recent data is changed</label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -589,6 +711,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeCheckpointModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="removeCheckpoint()">🗑️ Remove Checkpoint</button>
                 <button class="btn" onclick="saveCheckpointNotes()">Save Notes</button>
             </div>
         </div>
@@ -613,8 +736,15 @@
             const submitBtn = document.getElementById('submitQA');
             const downloadBtn = document.getElementById('downloadReport');
 
+            // Clear any existing event listeners and add new ones
+            uploadArea.removeEventListener('click', handleUploadAreaClick);
+            uploadArea.removeEventListener('dragover', handleDragOver);
+            uploadArea.removeEventListener('dragleave', handleDragLeave);
+            uploadArea.removeEventListener('drop', handleDrop);
+            fileInput.removeEventListener('change', handleFileSelect);
+
             // File upload handlers
-            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('click', handleUploadAreaClick);
             uploadArea.addEventListener('dragover', handleDragOver);
             uploadArea.addEventListener('dragleave', handleDragLeave);
             uploadArea.addEventListener('drop', handleDrop);
@@ -622,13 +752,14 @@
 
             // QA checkbox placement
             addCheckboxBtn.addEventListener('click', enableCheckboxPlacement);
-            document.getElementById('dashboardImage').addEventListener('click', placeCheckbox);
 
-            // Form submission
+            // Form submission and download
             submitBtn.addEventListener('click', submitQAReport);
-            
-            // Download functionality
             downloadBtn.addEventListener('click', downloadQAReport);
+        }
+
+        function handleUploadAreaClick() {
+            document.getElementById('fileInput').click();
         }
 
         function handleDragOver(e) {
@@ -658,22 +789,55 @@
         }
 
         function handleFile(file) {
+            if (!file) {
+                showStatus('No file selected.', 'error');
+                return;
+            }
+
             if (!file.type.startsWith('image/')) {
-                showStatus('Please select a valid image file.', 'error');
+                showStatus('Please select a valid image file (PNG, JPG, JPEG).', 'error');
+                return;
+            }
+
+            // Check file size (limit to 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showStatus('File size too large. Please select an image under 10MB.', 'error');
                 return;
             }
 
             currentImageFile = file;
+            showStatus('Processing image...', 'success');
+            
             const reader = new FileReader();
             
             reader.onload = function(e) {
-                const img = document.getElementById('dashboardImage');
-                img.src = e.target.result;
-                document.getElementById('imageContainer').style.display = 'block';
-                document.getElementById('addCheckboxBtn').style.display = 'inline-block';
-                document.getElementById('qaForm').style.display = 'block';
-                updateProgress(33);
-                showStatus('Image uploaded successfully! Now add QA checkpoints by clicking "Add QA Checkpoint" and then clicking on the image.', 'success');
+                try {
+                    const img = document.getElementById('dashboardImage');
+                    img.onload = function() {
+                        // Image loaded successfully
+                        document.getElementById('imageContainer').style.display = 'block';
+                        document.getElementById('addCheckboxBtn').style.display = 'inline-block';
+                        document.getElementById('qaForm').style.display = 'block';
+                        updateProgress(33);
+                        showStatus('✅ Image uploaded successfully! Now add QA checkpoints by clicking "Add QA Checkpoint" and then clicking on the image.', 'success');
+                    };
+                    
+                    img.onerror = function() {
+                        showStatus('❌ Error loading image. Please try a different file.', 'error');
+                        currentImageFile = null;
+                    };
+                    
+                    img.src = e.target.result;
+                } catch (error) {
+                    console.error('Error processing image:', error);
+                    showStatus('❌ Error processing image. Please try again.', 'error');
+                    currentImageFile = null;
+                }
+            };
+            
+            reader.onerror = function() {
+                showStatus('❌ Error reading file. Please try again.', 'error');
+                currentImageFile = null;
             };
             
             reader.readAsDataURL(file);
@@ -681,19 +845,32 @@
 
         function enableCheckboxPlacement() {
             const btn = document.getElementById('addCheckboxBtn');
+            const dashboardImage = document.getElementById('dashboardImage');
+            
             btn.textContent = 'Click on the image to place QA checkpoints';
             btn.style.background = 'linear-gradient(135deg, #e67e22, #d35400)';
-            document.getElementById('dashboardImage').style.cursor = 'crosshair';
+            dashboardImage.style.cursor = 'crosshair';
+            
+            // Remove existing click listener and add new one
+            dashboardImage.removeEventListener('click', placeCheckbox);
+            dashboardImage.addEventListener('click', placeCheckbox);
         }
 
         function placeCheckbox(e) {
-            if (e.target.style.cursor !== 'crosshair') return;
+            const dashboardImage = document.getElementById('dashboardImage');
+            if (dashboardImage.style.cursor !== 'crosshair') return;
 
             const rect = e.target.getBoundingClientRect();
             const x = ((e.clientX - rect.left) / rect.width) * 100;
             const y = ((e.clientY - rect.top) / rect.height) * 100;
 
             createQACheckbox(x, y);
+            
+            // Reset button after placing checkbox
+            const btn = document.getElementById('addCheckboxBtn');
+            btn.textContent = 'Add QA Checkpoint';
+            btn.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+            dashboardImage.style.cursor = 'default';
         }
 
         function createQACheckbox(x, y) {
@@ -715,6 +892,7 @@
             label.style.left = `${x}%`;
             label.style.top = `${y + 3}%`;
             label.style.transform = 'translate(-50%, 0)';
+            label.title = 'Click to add notes or remove this checkpoint';
 
             overlay.appendChild(checkbox);
             overlay.appendChild(label);
@@ -744,6 +922,11 @@
             });
 
             updateProgress(66);
+            
+            // Show success message for first checkpoint
+            if (checkboxCount === 1) {
+                showStatus('QA checkpoint added! Click on the label to add notes or remove checkpoints.', 'success');
+            }
         }
 
         function openCheckpointModal(checkpointId) {
@@ -752,9 +935,14 @@
             
             if (checkboxData) {
                 document.getElementById('checkpointDescription').textContent = 
-                    `Add notes for QA Check ${checkboxData.checkNumber}:`;
+                    `QA Check ${checkboxData.checkNumber} - Add notes or remove this checkpoint:`;
                 document.getElementById('checkpointNotes').value = checkboxData.notes || '';
                 document.getElementById('checkpointModal').style.display = 'block';
+                
+                // Focus on the textarea for better UX
+                setTimeout(() => {
+                    document.getElementById('checkpointNotes').focus();
+                }, 100);
             }
         }
 
@@ -788,6 +976,71 @@
             closeCheckpointModal();
         }
 
+        function removeCheckpoint() {
+            if (!currentCheckpointId) return;
+            
+            // Confirm removal
+            if (!confirm('Are you sure you want to remove this QA checkpoint?')) {
+                return;
+            }
+            
+            // Find the checkpoint data
+            const checkboxIndex = qaCheckboxes.findIndex(cb => cb.id === currentCheckpointId);
+            if (checkboxIndex === -1) return;
+            
+            const removedCheckboxData = qaCheckboxes[checkboxIndex];
+            
+            // Remove from array
+            qaCheckboxes.splice(checkboxIndex, 1);
+            
+            // Remove DOM elements
+            const checkbox = document.getElementById(currentCheckpointId);
+            const label = document.querySelector(`label[for="${currentCheckpointId}"]`);
+            
+            if (checkbox) checkbox.remove();
+            if (label) label.remove();
+            
+            // Update numbering for remaining checkboxes
+            renumberCheckpoints();
+            
+            // Close modal
+            closeCheckpointModal();
+            
+            showStatus(`QA Check ${removedCheckboxData.checkNumber} removed successfully`, 'success');
+        }
+
+        function renumberCheckpoints() {
+            // Sort checkboxes by their current position or original creation order
+            qaCheckboxes.sort((a, b) => {
+                // If they have the same y position, sort by x position
+                if (Math.abs(a.y - b.y) < 1) {
+                    return a.x - b.x;
+                }
+                return a.y - b.y;
+            });
+            
+            // Update check numbers and DOM elements
+            qaCheckboxes.forEach((checkpoint, index) => {
+                const newCheckNumber = index + 1;
+                const oldCheckNumber = checkpoint.checkNumber;
+                
+                // Update the data
+                checkpoint.checkNumber = newCheckNumber;
+                
+                // Update the label text
+                const label = document.querySelector(`label[for="${checkpoint.id}"]`);
+                if (label) {
+                    const hasNotes = checkpoint.notes && checkpoint.notes.trim();
+                    label.textContent = hasNotes ? 
+                        `QA Check ${newCheckNumber} 📝` : 
+                        `QA Check ${newCheckNumber}`;
+                }
+            });
+            
+            // Update the global counter to match the highest number
+            checkboxCount = qaCheckboxes.length;
+        }
+
         // Close modal when clicking outside
         window.addEventListener('click', function(e) {
             const modal = document.getElementById('checkpointModal');
@@ -804,22 +1057,52 @@
         });
 
         function submitQAReport() {
-            const dashboardName = document.getElementById('dashboardName').value;
-            const dataAccuracy = document.getElementById('dataAccuracy').checked;
-            const visualConsistency = document.getElementById('visualConsistency').checked;
-            const interactivity = document.getElementById('interactivity').checked;
-            const performance = document.getElementById('performance').checked;
+            const dashboardName = document.getElementById('dashboardName').value.trim();
             const notes = document.getElementById('notes').value;
 
-            if (!dashboardName.trim()) {
-                showStatus('Please enter a dashboard name.', 'error');
+            // VALIDATION: Dashboard name is required
+            if (!dashboardName) {
+                showStatus('❌ Dashboard Name is required! Please enter a dashboard name before submitting.', 'error');
+                document.getElementById('dashboardName').focus();
+                document.getElementById('dashboardName').style.borderColor = '#e74c3c';
                 return;
             }
+
+            // Reset border color if validation passes
+            document.getElementById('dashboardName').style.borderColor = '#e0e0e0';
 
             if (!currentImageFile) {
                 showStatus('Please upload an image first.', 'error');
                 return;
             }
+
+            // Collect all QA checklist results
+            const qaResults = {
+                // Functionality & Interactivity
+                filtersWork: document.getElementById('filtersWork').checked,
+                dropdownsUpdate: document.getElementById('dropdownsUpdate').checked,
+                tooltipsAccurate: document.getElementById('tooltipsAccurate').checked,
+                navigationWorks: document.getElementById('navigationWorks').checked,
+                dateFiltersDefault: document.getElementById('dateFiltersDefault').checked,
+                
+                // Chart Accuracy
+                correctDataPoints: document.getElementById('correctDataPoints').checked,
+                noUnexpectedValues: document.getElementById('noUnexpectedValues').checked,
+                measuresMatch: document.getElementById('measuresMatch').checked,
+                totalsCorrect: document.getElementById('totalsCorrect').checked,
+                
+                // Visual Consistency
+                legendsClean: document.getElementById('legendsClean').checked,
+                brandColors: document.getElementById('brandColors').checked,
+                consistentFonts: document.getElementById('consistentFonts').checked,
+                noOrphanColors: document.getElementById('noOrphanColors').checked,
+                nullValuesHandled: document.getElementById('nullValuesHandled').checked,
+                
+                // Data Integrity
+                numbersMatch: document.getElementById('numbersMatch').checked,
+                formattingConsistent: document.getElementById('formattingConsistent').checked,
+                dataRefreshVerified: document.getElementById('dataRefreshVerified').checked
+            };
 
             showLoading(true);
             
@@ -836,19 +1119,16 @@
                             const qaData = {
                                 dashboardName: dashboardName,
                                 imageFileId: result.fileId,
-                                dataAccuracy: dataAccuracy,
-                                visualConsistency: visualConsistency,
-                                interactivity: interactivity,
-                                performance: performance,
                                 notes: notes,
-                                qaCheckboxes: qaCheckboxes
+                                qaCheckboxes: qaCheckboxes,
+                                ...qaResults  // Spread all QA checklist results
                             };
                             
                             google.script.run
                                 .withSuccessHandler(function(saveResult) {
                                     showLoading(false);
                                     if (saveResult.success) {
-                                        showStatus('QA report submitted successfully!', 'success');
+                                        showStatus('✅ QA report submitted successfully!', 'success');
                                         updateProgress(100);
                                         showDownloadSection();
                                     } else {
@@ -888,21 +1168,54 @@
 
         function generateNotesSummary() {
             const checkboxesWithNotes = qaCheckboxes.filter(cb => cb.notes && cb.notes.trim());
+            const additionalNotes = document.getElementById('notes').value.trim();
             
-            if (checkboxesWithNotes.length > 0) {
+            if (checkboxesWithNotes.length > 0 || additionalNotes.length > 0) {
                 const notesSummary = document.getElementById('notesSummary');
                 const notesContent = document.getElementById('notesContent');
                 
                 notesContent.innerHTML = '';
                 
-                checkboxesWithNotes.forEach(checkpoint => {
-                    const noteItem = document.createElement('div');
-                    noteItem.className = 'checkpoint-note-item';
-                    noteItem.innerHTML = `
-                        <strong>QA Check ${checkpoint.checkNumber}:</strong> ${checkpoint.notes}
-                    `;
-                    notesContent.appendChild(noteItem);
-                });
+                // Add checkpoint notes
+                if (checkboxesWithNotes.length > 0) {
+                    const checkpointHeader = document.createElement('h5');
+                    checkpointHeader.textContent = 'QA Checkpoint Notes:';
+                    checkpointHeader.style.marginBottom = '15px';
+                    checkpointHeader.style.color = '#2c3e50';
+                    notesContent.appendChild(checkpointHeader);
+                    
+                    checkboxesWithNotes.forEach(checkpoint => {
+                        const noteItem = document.createElement('div');
+                        noteItem.className = 'checkpoint-note-item';
+                        noteItem.innerHTML = `
+                            <strong>QA Check ${checkpoint.checkNumber}:</strong> ${checkpoint.notes}
+                        `;
+                        notesContent.appendChild(noteItem);
+                    });
+                }
+                
+                // Add additional notes
+                if (additionalNotes.length > 0) {
+                    if (checkboxesWithNotes.length > 0) {
+                        const separator = document.createElement('hr');
+                        separator.style.margin = '20px 0';
+                        separator.style.border = 'none';
+                        separator.style.borderTop = '1px solid #e0e0e0';
+                        notesContent.appendChild(separator);
+                    }
+                    
+                    const additionalHeader = document.createElement('h5');
+                    additionalHeader.textContent = 'Additional Notes:';
+                    additionalHeader.style.marginBottom = '15px';
+                    additionalHeader.style.color = '#2c3e50';
+                    notesContent.appendChild(additionalHeader);
+                    
+                    const additionalNoteItem = document.createElement('div');
+                    additionalNoteItem.className = 'checkpoint-note-item';
+                    additionalNoteItem.style.borderLeft = '3px solid #8e44ad';
+                    additionalNoteItem.innerHTML = additionalNotes.replace(/\n/g, '<br>');
+                    notesContent.appendChild(additionalNoteItem);
+                }
                 
                 notesSummary.style.display = 'block';
             }
@@ -925,16 +1238,28 @@
             const canvas = document.getElementById('downloadCanvas');
             const ctx = canvas.getContext('2d');
             const img = document.getElementById('dashboardImage');
-            const container = document.getElementById('imageContainer');
             
-            // Get actual image dimensions
-            const imgRect = img.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
+            // Get additional notes from the main form
+            const additionalNotes = document.getElementById('notes').value.trim();
+            const dashboardName = document.getElementById('dashboardName').value.trim();
+            
+            // Get QA checklist results
+            const qaChecklist = getQAChecklistResults();
             
             // Calculate notes section height
             const checkboxesWithNotes = qaCheckboxes.filter(cb => cb.notes && cb.notes.trim());
-            const notesHeight = checkboxesWithNotes.length > 0 ? Math.max(200, checkboxesWithNotes.length * 50 + 100) : 0;
-            const headerHeight = 80;
+            const hasAdditionalNotes = additionalNotes.length > 0;
+            
+            let notesHeight = 600; // Base height for QA checklist
+            if (checkboxesWithNotes.length > 0) {
+                notesHeight += checkboxesWithNotes.length * 60 + 100;
+            }
+            if (hasAdditionalNotes) {
+                const estimatedLines = Math.ceil(additionalNotes.length / 80);
+                notesHeight += estimatedLines * 25 + 80;
+            }
+            
+            const headerHeight = 100;
             const padding = 40;
             
             // Set canvas size
@@ -951,11 +1276,15 @@
             ctx.textAlign = 'center';
             ctx.fillText('Tableau Dashboard QA Report', canvas.width / 2, 40);
             
-            // Draw timestamp
-            ctx.font = '18px Arial';
+            // Draw dashboard name and timestamp
+            ctx.font = '20px Arial';
+            ctx.fillStyle = '#3498db';
+            ctx.fillText(`Dashboard: ${dashboardName}`, canvas.width / 2, 70);
+            
+            ctx.font = '16px Arial';
             ctx.fillStyle = '#7f8c8d';
             const timestamp = new Date().toLocaleString();
-            ctx.fillText(`Generated: ${timestamp}`, canvas.width / 2, 65);
+            ctx.fillText(`Generated: ${timestamp}`, canvas.width / 2, 95);
             
             // Draw dashboard image
             ctx.drawImage(img, 0, headerHeight + padding, img.naturalWidth, img.naturalHeight);
@@ -1005,55 +1334,218 @@
                 ctx.fillText(labelText, x, labelY);
             });
             
-            // Draw notes section if there are any
-            if (checkboxesWithNotes.length > 0) {
-                const notesStartY = img.naturalHeight + headerHeight + padding + 20;
+            // Start notes section
+            let notesStartY = img.naturalHeight + headerHeight + padding + 30;
+            
+            // Draw notes header divider
+            ctx.fillStyle = '#3498db';
+            ctx.fillRect(0, notesStartY, canvas.width, 3);
+            notesStartY += 30;
+            
+            // Draw QA Checklist Results
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('✅ QA Checklist Results', 20, notesStartY);
+            notesStartY += 40;
+            
+            // QA checklist categories
+            const categories = [
+                {
+                    title: '1. Functionality & Interactivity',
+                    items: [
+                        { key: 'filtersWork', label: 'Filters work as expected' },
+                        { key: 'dropdownsUpdate', label: 'Dropdowns and parameters update charts correctly' },
+                        { key: 'tooltipsAccurate', label: 'Tooltips show accurate and relevant information' },
+                        { key: 'navigationWorks', label: 'Navigation buttons or links work' },
+                        { key: 'dateFiltersDefault', label: 'Date filters default to correct time ranges' }
+                    ]
+                },
+                {
+                    title: '2. Chart Accuracy',
+                    items: [
+                        { key: 'correctDataPoints', label: 'Correct number of data points are shown' },
+                        { key: 'noUnexpectedValues', label: 'No unexpected categories or values appear' },
+                        { key: 'measuresMatch', label: 'All measures and dimensions match requirements' },
+                        { key: 'totalsCorrect', label: 'Totals and subtotals calculate correctly' }
+                    ]
+                },
+                {
+                    title: '3. Visual Consistency',
+                    items: [
+                        { key: 'legendsClean', label: 'Legends do not contain unexpected values' },
+                        { key: 'brandColors', label: 'All colors align with brand standards' },
+                        { key: 'consistentFonts', label: 'Consistent use of fonts, font sizes, and spacing' },
+                        { key: 'noOrphanColors', label: 'No orphan color keys' },
+                        { key: 'nullValuesHandled', label: 'Zero or null values are not misleading' }
+                    ]
+                },
+                {
+                    title: '4. Data Integrity',
+                    items: [
+                        { key: 'numbersMatch', label: 'Numbers match the data source' },
+                        { key: 'formattingConsistent', label: 'Currency and number formatting is consistent' },
+                        { key: 'dataRefreshVerified', label: 'Data refresh date is verified' }
+                    ]
+                }
+            ];
+            
+            // Draw each category
+            categories.forEach(category => {
+                // Draw category title
+                ctx.fillStyle = '#34495e';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText(category.title, 20, notesStartY);
+                notesStartY += 25;
                 
-                // Draw notes header
-                ctx.fillStyle = '#3498db';
+                // Draw items in this category
+                category.items.forEach(item => {
+                    const isChecked = qaChecklist[item.key];
+                    const status = isChecked ? '✅' : '❌';
+                    
+                    ctx.font = '14px Arial';
+                    ctx.fillText(status, 40, notesStartY);
+                    
+                    ctx.fillStyle = '#555555';
+                    ctx.fillText(item.label, 65, notesStartY);
+                    
+                    notesStartY += 20;
+                });
+                
+                notesStartY += 10; // Extra space between categories
+            });
+            
+            // Draw checkpoint notes if any exist
+            if (checkboxesWithNotes.length > 0) {
+                notesStartY += 20;
+                ctx.fillStyle = '#8e44ad';
                 ctx.fillRect(0, notesStartY, canvas.width, 2);
+                notesStartY += 30;
                 
                 ctx.fillStyle = '#2c3e50';
-                ctx.font = 'bold 24px Arial';
-                ctx.textAlign = 'left';
-                ctx.fillText('📝 QA Checkpoint Notes', 20, notesStartY + 40);
-                
-                // Draw individual notes
-                let currentY = notesStartY + 70;
-                ctx.font = '16px Arial';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('📝 QA Checkpoint Notes', 20, notesStartY);
+                notesStartY += 30;
                 
                 checkboxesWithNotes.forEach(checkpoint => {
-                    // Draw checkpoint title
                     ctx.fillStyle = '#2c3e50';
-                    ctx.font = 'bold 16px Arial';
-                    ctx.fillText(`QA Check ${checkpoint.checkNumber}:`, 20, currentY);
+                    ctx.font = 'bold 14px Arial';
+                    ctx.fillText(`QA Check ${checkpoint.checkNumber}:`, 20, notesStartY);
                     
-                    // Draw notes text (with word wrapping)
                     ctx.fillStyle = '#555555';
-                    ctx.font = '16px Arial';
-                    const notes = checkpoint.notes;
-                    const maxWidth = canvas.width - 40;
-                    const words = notes.split(' ');
+                    ctx.font = '14px Arial';
+                    const words = checkpoint.notes.split(' ');
                     let line = '';
-                    let lineY = currentY + 25;
+                    let lineY = notesStartY + 20;
                     
                     for (let i = 0; i < words.length; i++) {
                         const testLine = line + words[i] + ' ';
                         const metrics = ctx.measureText(testLine);
                         
-                        if (metrics.width > maxWidth && i > 0) {
+                        if (metrics.width > canvas.width - 40 && i > 0) {
                             ctx.fillText(line, 20, lineY);
                             line = words[i] + ' ';
-                            lineY += 20;
+                            lineY += 18;
                         } else {
                             line = testLine;
                         }
                     }
                     ctx.fillText(line, 20, lineY);
-                    
-                    currentY = lineY + 30;
+                    notesStartY = lineY + 25;
                 });
             }
+            
+            // Draw additional notes if they exist
+            if (hasAdditionalNotes) {
+                notesStartY += 20;
+                ctx.fillStyle = '#e0e0e0';
+                ctx.fillRect(20, notesStartY, canvas.width - 40, 1);
+                notesStartY += 30;
+                
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('📋 Additional Notes', 20, notesStartY);
+                notesStartY += 30;
+                
+                ctx.fillStyle = '#555555';
+                ctx.font = '14px Arial';
+                const words = additionalNotes.split(' ');
+                let line = '';
+                let lineY = notesStartY;
+                
+                for (let i = 0; i < words.length; i++) {
+                    const testLine = line + words[i] + ' ';
+                    const metrics = ctx.measureText(testLine);
+                    
+                    if (metrics.width > canvas.width - 40 && i > 0) {
+                        ctx.fillText(line, 20, lineY);
+                        line = words[i] + ' ';
+                        lineY += 18;
+                    } else {
+                        line = testLine;
+                    }
+                }
+                ctx.fillText(line, 20, lineY);
+            }
+            
+            // Convert to blob and download
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                
+                a.href = url;
+                a.download = `${dashboardName}_QA_Report_${timestamp}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus('QA report downloaded successfully! 📥', 'success');
+            }, 'image/png');
+        }
+
+        function getQAChecklistResults() {
+            return {
+                // Functionality & Interactivity
+                filtersWork: document.getElementById('filtersWork').checked,
+                dropdownsUpdate: document.getElementById('dropdownsUpdate').checked,
+                tooltipsAccurate: document.getElementById('tooltipsAccurate').checked,
+                navigationWorks: document.getElementById('navigationWorks').checked,
+                dateFiltersDefault: document.getElementById('dateFiltersDefault').checked,
+                
+                // Chart Accuracy
+                correctDataPoints: document.getElementById('correctDataPoints').checked,
+                noUnexpectedValues: document.getElementById('noUnexpectedValues').checked,
+                measuresMatch: document.getElementById('measuresMatch').checked,
+                totalsCorrect: document.getElementById('totalsCorrect').checked,
+                
+                // Visual Consistency
+                legendsClean: document.getElementById('legendsClean').checked,
+                brandColors: document.getElementById('brandColors').checked,
+                consistentFonts: document.getElementById('consistentFonts').checked,
+                noOrphanColors: document.getElementById('noOrphanColors').checked,
+                nullValuesHandled: document.getElementById('nullValuesHandled').checked,
+                
+                // Data Integrity
+                numbersMatch: document.getElementById('numbersMatch').checked,
+                formattingConsistent: document.getElementById('formattingConsistent').checked,
+                dataRefreshVerified: document.getElementById('dataRefreshVerified').checked
+            };
+        }const testLine = line + words[i] + ' ';
+                        const metrics = ctx.measureText(testLine);
+                        
+                        if (metrics.width > maxWidth && i > 0) {
+                            ctx.fillText(line, 20, lineY);
+                            line = words[i] + ' ';
+                            lineY += 22;
+                        } else {
+                            line = testLine;
+                        }
+                    
+                    ctx.fillText(line, 20, lineY);
+                
+            
             
             // Convert to blob and download
             canvas.toBlob(function(blob) {
@@ -1071,7 +1563,7 @@
                 
                 showStatus('QA report downloaded successfully! 📥', 'success');
             }, 'image/png');
-        }
+        
 
         function showStatus(message, type) {
             const statusDiv = document.getElementById('statusMessage');
@@ -1095,11 +1587,20 @@
         function resetForm() {
             // Reset all form elements
             document.getElementById('dashboardName').value = '';
-            document.getElementById('dataAccuracy').checked = false;
-            document.getElementById('visualConsistency').checked = false;
-            document.getElementById('interactivity').checked = false;
-            document.getElementById('performance').checked = false;
             document.getElementById('notes').value = '';
+            
+            // Reset all QA checklist items
+            const checkboxes = [
+                'filtersWork', 'dropdownsUpdate', 'tooltipsAccurate', 'navigationWorks', 'dateFiltersDefault',
+                'correctDataPoints', 'noUnexpectedValues', 'measuresMatch', 'totalsCorrect',
+                'legendsClean', 'brandColors', 'consistentFonts', 'noOrphanColors', 'nullValuesHandled',
+                'numbersMatch', 'formattingConsistent', 'dataRefreshVerified'
+            ];
+            
+            checkboxes.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox) checkbox.checked = false;
+            });
             
             // Reset image and checkboxes
             document.getElementById('imageContainer').style.display = 'none';
